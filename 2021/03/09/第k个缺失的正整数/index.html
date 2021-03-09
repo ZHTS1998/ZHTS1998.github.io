@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="ZHTS的博客"/>
+        <meta property="og:title" content="第k个缺失的正整数"/>
     
 
     <!--Open Graph Description-->
@@ -36,7 +36,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>Archives: 2021 - ZHTS的博客</title>
+    <title>第k个缺失的正整数 - ZHTS的博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -159,88 +159,94 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>2021</h1>
+                <div class="post-heading">
+                    <h1>第k个缺失的正整数</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2021-03-09
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+<a href="/categories/leetcode/">leetcode</a>
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
-                <div class="post-preview">
-    <a href="/2021/03/09/第k个缺失的正整数/">
-        <h1 class="post-title archive">
-            第k个缺失的正整数
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-09
-    </p>
-</div>
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2021/03/08/3-8日每日一题/">
-        <h1 class="post-title archive">
-            3/8日每日一题，分割回文串2
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-08
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/kth-missing-positive-number/">题目链接</a><br>这道题是前几天阿里的笔试题，又想到和我之前面试时碰到的第一个缺失的正整数很像，就记录了下来</p>
+<h1 id="第k个缺失的正整数"><a href="#第k个缺失的正整数" class="headerlink" title="第k个缺失的正整数"></a>第k个缺失的正整数</h1><h2 id="第一个缺失的正整数"><a href="#第一个缺失的正整数" class="headerlink" title="第一个缺失的正整数"></a>第一个缺失的正整数</h2><pre><code>    第k个缺失的正整数和之前做个的第一个缺失的正整数很像，当时他对我的提示是，什么时候会有第一个缺失？一个萝卜一个坑，当第i个坑时，对应的数字比i大，则i之前一定有缺失的正整数，如1235，当第四个位置对应的比4大时，则有缺失
+缺失的数字为上一个坑+1就可以了
+</code></pre>
+<h2 id="第k个缺失的正整数-1"><a href="#第k个缺失的正整数-1" class="headerlink" title="第k个缺失的正整数"></a>第k个缺失的正整数</h2><pre><code>和第一个有点像，不过，有如下特点：当第i个数为m时，则之前缺失的正整数个数为m-i（第i个数对应下标为i-1），很好理解，到这里本应只有i，你已经到m了，则缺失了m-i个数
+</code></pre>
+<h3 id="优化："><a href="#优化：" class="headerlink" title="优化："></a>优化：</h3><pre><code>开始时使用一次遍历，复杂度O（N），后来发现由于递增的，可以使用二分法来降低复杂度，找到第一个下标i使m-i-1&gt;=k，根据这个i，找到i-1，可以从i-1缺失的数个数+剩下缺失的数，剩下缺失的数字个数为k-（m- i-1）
+</code></pre>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">findKthPositive</span><span class="params">(arr []<span class="keyword">int</span>, k <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="comment">//由于是正整数，因此不考虑小于0的情况了</span></span><br><span class="line">	<span class="keyword">if</span> arr[<span class="number">0</span>] &gt; k &#123;</span><br><span class="line">		<span class="keyword">return</span> k</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	left, right := <span class="number">0</span>, <span class="built_in">len</span>(arr)<span class="number">-1</span></span><br><span class="line">	<span class="keyword">for</span> left &lt;= right &#123;</span><br><span class="line">		mid := left + (right-left)/<span class="number">2</span></span><br><span class="line">		<span class="keyword">if</span> arr[mid]-mid<span class="number">-1</span> &lt; k &#123;</span><br><span class="line">			left = mid + <span class="number">1</span></span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			right = mid - <span class="number">1</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	left--</span><br><span class="line">	<span class="keyword">return</span> arr[left] + k - (arr[left] - left - <span class="number">1</span>)</span><br><span class="line">    <span class="comment">//arr[left] - left - 1为上一个缺失的正整数总数，k减去这个数就是还需要的正整数，则第k个缺失的就是arr[left]+刚才的总数</span></span><br><span class="line">&#125;	</span><br></pre></td></tr></table></figure>
+
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2021/03/08/why-blog/">
-        <h1 class="post-title archive">
-            why blog
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-08
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+    <hr />
+    <h3>Comments:</h3>
+    <div id="fb-root"></div>
+    <script>
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=12345";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+    <div class="fb-comments" data-href="http://example.com/2021/03/09/%E7%AC%ACk%E4%B8%AA%E7%BC%BA%E5%A4%B1%E7%9A%84%E6%AD%A3%E6%95%B4%E6%95%B0/index.html" data-num-posts="5" data-width="100%" data-colorscheme="light"></div>
+
+                </div>
             
-                <div class="post-preview">
-    <a href="/2021/03/08/hello-world/">
-        <h1 class="post-title archive">
-            Hello World
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-08
-    </p>
-</div>
-            
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-</ul>
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
