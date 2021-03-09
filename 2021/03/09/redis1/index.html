@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="categories"/>
+        <meta property="og:title" content="redis1"/>
     
 
     <!--Open Graph Description-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>categories - ZHTS的博客</title>
+    <title>redis1 - ZHTS的博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -159,59 +159,143 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-
-    <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <div class="site-heading">
-                        <h1>categories</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                
-                    <div class="post-preview">
-    <a href="/categories/introduction/">
-        <h1 class="post-title archive">
-            introduction
-        </h1>
-    </a>
-</div>
-                
-                    <div class="post-preview">
-    <a href="/categories/leetcode/">
-        <h1 class="post-title archive">
-            leetcode
-        </h1>
-    </a>
-</div>
-                
-                    <div class="post-preview">
-    <a href="/categories/redis/">
-        <h1 class="post-title archive">
-            redis
-        </h1>
-    </a>
-</div>
-                
-                <div class="archive-before-pagination"></div>
+                <div class="post-heading">
+                    <h1>redis1</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2021-03-09
+                        
+                    </span>
+                </div>
             </div>
         </div>
     </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+<a href="/categories/redis/">redis</a>
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>redis这里主要跟着书redis的设计与实现来学的，同时实习中也有用到redis来作为缓存</p>
+<p>#redis的底层结构</p>
+<ul>
+<li><p>SDS字符串</p>
+</li>
+<li><p>链表</p>
+</li>
+<li><p>字典</p>
+</li>
+<li><p>跳表</p>
+</li>
+<li><p>整数集合</p>
+</li>
+<li><p>压缩列表</p>
+</li>
+</ul>
+<p>##1.SDS字符串：</p>
+<p>1.1sds字符串定义：</p>
+<pre><code class="c++">    struct sdshdr&#123;
+        int len;
+        int free;
+        int buf[]; 
+    &#125;
+</code></pre>
+<p>其中SDS-&gt;buf也以’\0’结尾，这样使得SDS可以复用C的函数</p>
+<p>len为字符串的长度</p>
+<p>1.2SDS与C的比较</p>
+<p>获得长度O（1）</p>
+<pre><code>SDS由于有len属性，因此获取字符串长度这一操作为O(1),而C语言需要遍历到&#39;\0&#39;
+由于REDIS中可能有很多时候需要读取字符串长度，因此这一优化使得获取字符串长度的工作不会成为Redis的性能瓶颈
+</code></pre>
+<p>不担心缓冲区溢出</p>
+<pre><code>SDS具有自动扩容的机制，每次对字符串修改前会检查SDS空间大小，若不够的话会对其进行扩容
+</code></pre>
+<p>减少修改字符串时带来的内存重分配次数</p>
+<pre><code>redis对速度要求苛刻，而c语言的字符串修改时会进行内存重分配，否则会溢出或泄露；SDS字符串可以具有未使用空间，用
+free来记录，这样来减少内存重分配次数
+</code></pre>
+<p>1.3SDS空间分配：</p>
+<p>1.3.1预分配规则如下：</p>
+<p><img src="../pictures/redis/alloc.png" alt="内存分配"></p>
+<p>简而言之，小于1MB时，分配两倍+1个字节（’\0’），大于1MB时，多分配1MB+1个字节。</p>
+<p>通过预分配，减少了重分配的次数，进而减少了和内存的交互，提高了效率。相当于空间换时间。</p>
+<p>1.3.2惰性空间释放</p>
+<p>伪释放，只是使用SDS-&gt;free将没用到的空间记录下来，并没有真正的减少大小。当然也有相应的API来真正释放这些内存。</p>
+<p>这种伪释放可以</p>
+<p>1.4SDS的二进制安全：</p>
+<p><img src="../pictures/redis/2jinzhi.png" alt="一个例子"></p>
+<p>当C语言遇到上面这幅图时，C语言在读到REDIS’\0’后就停止了，SDS则不会，由于SDS记录了它的len属性，因此会一直读取长度为<br>len的字符。</p>
+<p>也就是说，Redis不是用这个数组来保存字符，而是用它来保存一系列二进制数据。程序不会对其中的数据做任何限制、过滤、或者假设，数据在写入时是什么样的，它被读取时就是什么样。</p>
+<p>也正因此，SDS只能使用部分C语言中的字符串函数。而不是所有</p>
+<p>SDS总结：SDS优点如下：</p>
+<p>1）常数复杂度获取字符串长度。</p>
+<p>2）杜绝缓冲区溢出。</p>
+<p>3）减少修改字符串长度时所需的内存重分配次数。</p>
+<p>4）二进制安全。</p>
+<p>5）兼容部分C字符串函数。<br>##2.链表：<br>##3.字典：<br>##4.跳表：<br>##5.整数集合：<br>##6.压缩列表：
+ </p>
 
 
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
 
 
+    <hr />
+    <h3>Comments:</h3>
+    <div id="fb-root"></div>
+    <script>
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=12345";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
 
+    <div class="fb-comments" data-href="http://example.com/2021/03/09/redis1/index.html" data-num-posts="5" data-width="100%" data-colorscheme="light"></div>
+
+                </div>
+            
+        </div>
+    </div>
+</article>
 
     <!-- Footer -->
     <hr />
