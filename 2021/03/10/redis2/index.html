@@ -189,13 +189,83 @@
 
             <!-- Tags and categories -->
            
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+<a href="/categories/redis/">redis</a>
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
 
             <!-- Gallery -->
             
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                
+                <h1 id="redis对象"><a href="#redis对象" class="headerlink" title="redis对象"></a>redis对象</h1><p>redis1中介绍了redis的底层数据结构，redis的五种对象正是由这些底层<br>数据结构构成的，而且每种对象都至少会涉及到两种数据结构。</p>
+<p>redis的五种对象：字符串对象，列表对象，哈希对象，集合对象和有序集合对象</p>
+<p>redis创建k，v时，至少会创建两个对象（键对象和值对象），而且键对象一定是字符串，值对象可以是任意一种<br>所以，其实所谓的哈希键，列表键，指的都是该键的值对象是哈希对象或列表对象</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span>&#123;</span></span><br><span class="line">    unnsigned type:<span class="number">4</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> encoding:<span class="number">4</span>;</span><br><span class="line">    <span class="keyword">void</span> *ptr；</span><br><span class="line">    <span class="keyword">unsigned</span> lru:<span class="number">22</span>;</span><br><span class="line">&#125;robj;</span><br></pre></td></tr></table></figure>
+<p>每个对象都有类型，编码，和指向底层数据结构的指针等构成，还有lru属性，表示空转时长。</p>
+<h3 id="字符串对象："><a href="#字符串对象：" class="headerlink" title="字符串对象："></a>字符串对象：</h3><p>使用SET命令创建如（SET name “TOM”））</p>
+<pre><code> 1.字符串保存的是整数值时，底层编码用int（但是浮点数使用字符串保存的）
+ 2.若保存的是大于32字节的字符串，则使用SDS保存，编码设置为raw
+ 3.若小于32字节，则编码方式为embstr
+</code></pre>
+<p>那么raw和embstr的区别是什么呢？</p>
+<pre><code>  embstr是保存短字符串的优化方法，
+  raw和embstr都使用redisObject结构和sdshdr结构来表示字符串对象
+  但是raw调用两次内存分配函数，分别创建两个结构；而embstr只调用一次，创建了一个连续的空间
+  所以embstr好处有比如：内存分配次数变低，内存释放也只需一次；
+  此外，数据保存在连续的内存里，能更好地利用缓存
+  
+</code></pre>
+<p>此外由于embstr没有相应的修改程序（比如int类型字符串对象append了一个’A’，则它会变成raw编码，而embstr编码的则没有相应的功能），</p>
+<p>所以其实embstr编码的字符串是只读的；<br>embstr编码字符串的修改是将它变为raw编码，再修改的，而这样修改后它就会变成一个raw对象</p>
+<h3 id="列表对象"><a href="#列表对象" class="headerlink" title="列表对象"></a>列表对象</h3><p>列表键的底层编码为压缩列表或链表，使用LPUSH或RPUSH命令创建如（LPUSH name “TOM”）<br><em>较小时使用压缩列表，较大时使用链表</em></p>
+<pre><code> 1.列表对象保存的所有字符串元素的长度都小于 64 字节；
+ 2 .并且列表对象保存的元素数量小于 512 个；
+ 满足以上两个条件时使用压缩列表，其他时候使用链表
+ 当然这两个条件的阈值是可以修改的
+</code></pre>
+<h3 id="哈希对象"><a href="#哈希对象" class="headerlink" title="哈希对象"></a>哈希对象</h3><p>哈希对象的编码可以是 ziplist 或者 hashtable 。使用HSET命令创建如（HSET name “TOM”）</p>
+<pre><code>当哈希对象可以同时满足以下两个条件时， 哈希对象使用 ziplist 编码：
+
+哈希对象保存的所有键值对的键和值的字符串长度都小于 64 字节；
+哈希对象保存的键值对数量小于 512 个；
+不能满足这两个条件的哈希对象需要使用 hashtable 编码。
+</code></pre>
+<h3 id="集合对象"><a href="#集合对象" class="headerlink" title="集合对象"></a>集合对象</h3><p>集合对象的编码可以是 intset 或者 hashtable。使用SADD命令创建（如SADD nums 1 3 5）</p>
+<p>hashtable 编码的集合对象使用字典作为底层实现， 字典的每个键都是一个字符串对象， 每个字符串对象包含了一个集合元素， 而字典的值则全部被设置为 NULL 。</p>
+<pre><code>当集合对象可以同时满足以下两个条件时， 对象使用 intset 编码：
+
+集合对象保存的所有元素都是整数值；
+集合对象保存的元素数量不超过 512 个；
+不能满足这两个条件的集合对象需要使用 hashtable 编码。
+</code></pre>
+<h3 id="有序集合对象"><a href="#有序集合对象" class="headerlink" title="有序集合对象"></a>有序集合对象</h3><p>有序集合的编码可以是 ziplist 或者 skiplist 。使用ZADD命令创建（如ZADD a 1 b 2）</p>
+<pre><code>当有序集合对象可以同时满足以下两个条件时， 对象使用 ziplist 编码：
+
+有序集合保存的元素数量小于 128 个；
+有序集合保存的所有元素成员的长度都小于 64 字节；
+不能满足以上两个条件的有序集合对象将使用 skiplist 编码。
+</code></pre>
+<p>此外使用skiplist编码时，不仅使用了跳表，还使用了字典</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    zskiplist *zsl;</span><br><span class="line"></span><br><span class="line">    dict *dict;</span><br><span class="line"></span><br><span class="line">&#125; zset;</span><br></pre></td></tr></table></figure>
+<p>跳跃表节点的 object 属性保存了元素的成员， 而跳跃表节点的 score 属性则保存了元素的分值。</p>
+<p>zset 结构中的 dict 字典为有序集合创建了一个从成员到分值的映射， 字典中的每个键值对都保存了一个集合元素： 字典的键保存了元素的成员， 而字典的值则保存了元素的分值。 通过这个字典， 程序可以用 O(1) 复杂度查找给定成员的分值</p>
+<h3 id="redis内存回收"><a href="#redis内存回收" class="headerlink" title="redis内存回收"></a>redis内存回收</h3><p> redis使用引用计数技术进行内存回收：创建时设为1，被新程序使用+1，不再被一个程序使用-1，当为0时，内存会被释放</p>
+<h3 id="对象共享"><a href="#对象共享" class="headerlink" title="对象共享"></a>对象共享</h3><p>若新创建对象时 ，其它键包含相同的对象，则这两个键共享同一个对象</p>
+<p><em>共享时除了A和B指针指向同一个对象外，还会使被共享的对象引用计数值增加一</em></p>
+<p>由于验证共享对象与目标对象相同是有复杂度的，而字符串对象众多，因此一般Redis 只对包含整数值的字符串对象进行共享。</p>
+<h3 id="空转时长"><a href="#空转时长" class="headerlink" title="空转时长"></a>空转时长</h3><p>空转时长就是未使用的时间。</p>
+<p>如果服务器打开了 maxmemory 选项， 并且服务器用于回收内存的算法为 volatile-lru 或者 allkeys-lru ， 那么当服务器占用的内存数超过了 maxmemory 选项所设置的上限值时， 空转时长较高的那部分键会优先被服务器释放， 从而回收内存。</p>
+
 
                 
             </div>
