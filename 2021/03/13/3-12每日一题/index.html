@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="ZHTS的博客"/>
+        <meta property="og:title" content="3.12每日一题"/>
     
 
     <!--Open Graph Description-->
@@ -36,7 +36,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>Archives: 2021/3 - ZHTS的博客</title>
+    <title>3.12每日一题 - ZHTS的博客</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -159,140 +159,105 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>2021/3</h1>
+                <div class="post-heading">
+                    <h1>3.12每日一题</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2021-03-13
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+<a href="/categories/leetcode/">leetcode</a>
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
-                <div class="post-preview">
-    <a href="/2021/03/13/3-12每日一题/">
-        <h1 class="post-title archive">
-            3.12每日一题
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-13
-    </p>
-</div>
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2021/03/10/mysql1/">
-        <h1 class="post-title archive">
-            mysql1
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-10
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/">题目链接</a></p>
+<p>判断一个字符串是否是正确的二叉树的前序序列化：<br>如”9,3,4,#,#,1,#,#,2,#,6,#,#” 就可以</p>
+<p>题目分析：<br>    第一反应是使用栈来解决,有一点比较巧妙的是，本题目只需判断，不需真的还原，因此也没必要一定将原数字入栈，只需记录数字<br>的个数即可。</p>
+<p><em>这里可以使用位置数量的方法来规划这个栈</em></p>
+<pre><code>    开始时只有一个位置
+    有新的数字来时，相当于占了一个位置，同时它还能提供两个新的位置；（一个节点有两个分支）
+    当来了一个#时，相当于占了一个位置，并且没有提供任何新的位置；
+   
+</code></pre>
+<p>肯定要根据读到的字符不同来进行不同的处理：</p>
+<pre><code>先入栈一个1（相当于为根节点提供了一个位置）
+当读到的字符是&#39;,&#39;时，可以直接下次循环;
+当读到的是&#39;#&#39;时，可以将栈顶元素出栈，减一，若大于0再入栈；
+当读到数字时，一直读到下一个‘，’（由于数字的位数可能不止一位），并将栈顶元素出栈
+，减一，若大于0再入栈，并再入栈一个2
+</code></pre>
+<p>改进：</p>
+<pre><code>可以看到栈只是提供了一个辅助计数的功能，通过一个常量也可以完成，且能过节约栈的空间
+</code></pre>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isValidSerialization</span><span class="params">(String preorder)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span> i =<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> x =<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span>(i&lt;preorder.length())&#123;</span><br><span class="line">            <span class="keyword">if</span>(x==<span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(preorder.charAt(i) ==<span class="string">&#x27;,&#x27;</span>)&#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span>(preorder.charAt(i) ==<span class="string">&#x27;#&#x27;</span>)&#123;</span><br><span class="line">                x--;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123; </span><br><span class="line">                <span class="keyword">while</span>(i&lt;preorder.length()&amp;&amp;preorder.charAt(i)!=<span class="string">&#x27;,&#x27;</span>)&#123;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">               x++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> x==<span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2021/03/10/redis2/">
-        <h1 class="post-title archive">
-            redis2
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-10
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+    <hr />
+    <h3>Comments:</h3>
+    <div id="fb-root"></div>
+    <script>
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=12345";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+    <div class="fb-comments" data-href="http://example.com/2021/03/13/3-12%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/index.html" data-num-posts="5" data-width="100%" data-colorscheme="light"></div>
+
+                </div>
             
-                <div class="post-preview">
-    <a href="/2021/03/09/redis1/">
-        <h1 class="post-title archive">
-            redis1
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-09
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2021/03/09/第k个缺失的正整数/">
-        <h1 class="post-title archive">
-            第k个缺失的正整数
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-09
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2021/03/08/3-8日每日一题/">
-        <h1 class="post-title archive">
-            3/8日每日一题，分割回文串2
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-08
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2021/03/08/why-blog/">
-        <h1 class="post-title archive">
-            why blog
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-08
-    </p>
-</div>
-            
-                <div class="post-preview">
-    <a href="/2021/03/08/hello-world/">
-        <h1 class="post-title archive">
-            Hello World
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2021-03-08
-    </p>
-</div>
-            
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-</ul>
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
